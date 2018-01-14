@@ -14,7 +14,7 @@ export default class DrawingListView extends Component {
       <ScrollView>
         <View style={styles.container}>
           <Text>Saved Drawings</Text>
-          {(svgObjects.length > 0)&&svgObjects.map((svgObj, index)=>{
+          {(svgObjects.length > 0)&&svgObjects.reverse().map((svgObj, index)=>{
             return (
               <View
                 key={index}

@@ -52,7 +52,6 @@ export default class App extends React.Component {
       this.setState({
         svgId: uuidv1()
       })
-      console.log("svgObjects>>>", this.state.svgObjects)
     })
   }
 
