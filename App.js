@@ -9,12 +9,15 @@ const {
   Path
 } = Svg
 
+import DrawingListView from './DrawingListView'
+
 export default class App extends React.Component {
 
   state={
     svgId: null,
     currentSVGInfo: null,
-    svgObjects:[]
+    svgObjects:[],
+    savedDrawingView: false
   }
 
   componentDidMount(){
@@ -49,83 +52,73 @@ export default class App extends React.Component {
       this.setState({
         svgId: uuidv1()
       })
+      console.log("svgObjects>>>", this.state.svgObjects)
+    })
+  }
+
+  swapView=()=>{
+    this.setState({
+      savedDrawingView: !this.state.savedDrawingView
     })
   }
 
   render() {
-    const { svgObjects } = this.state
-    return (
-      <ScrollView>
+    const { svgObjects, savedDrawingView } = this.state
+    return savedDrawingView?(
+      <DrawingListView
+        svgObjects={svgObjects}
+        swapView={this.swapView}
+      />
+    ):(
         <View style={styles.container}>
-        <Text>React Native Draw</Text>
-        <View style={styles.btnContainer}>
-          <TouchableOpacity
-            onPress={this.clear}
-            style={[styles.btn, styles.btnRed]}
-          >
-            <Text style={styles.btnText}>Clear</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={this.rewind}
-            style={[styles.btn, styles.btnOrange]}
-          >
-            <Text style={styles.btnText}>Rewind</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={this.save}
-            style={[styles.btn, styles.btnGreen]}
-          >
-            <Text style={styles.btnText}>Save</Text>
-          </TouchableOpacity>
+          <View style={styles.container}>
+            <Text>React Native Draw</Text>
+            <View style={styles.btnContainer}>
+              <TouchableOpacity
+                onPress={this.clear}
+                style={[styles.btn, styles.btnRed]}
+              >
+                <Text style={styles.btnText}>Clear</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={this.rewind}
+                style={[styles.btn, styles.btnOrange]}
+              >
+                <Text style={styles.btnText}>Rewind</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={this.save}
+                style={[styles.btn, styles.btnGreen]}
+              >
+                <Text style={styles.btnText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.imageFrame}>
+              <Image
+                style={styles.backgroundImg}
+                source={(require('./whiteboard.jpg'))}
+              />
+              <RNDraw
+                containerStyle={{backgroundColor: 'rgba(0,0,0,0.01)'}}
+                rewind={(undo) => {this._undo = undo}}
+                clear={(clear) => {this._clear = clear}}
+                updateSVGInfo={(svgObj)=>{this.updateSVGInfo(svgObj)}}
+                color={'#000000'}
+                strokeWidth={4}
+                svgId={this.state.svgId}
+              />
+            </View>
+  
+            <View>
+              <TouchableOpacity
+                onPress={this.swapView}
+              >
+                <Text>Saved Drawings</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
-        <View style={styles.imageFrame}>
-          <Image
-            style={styles.backgroundImg}
-            source={(require('./whiteboard.jpg'))}
-          />
-          <RNDraw
-            containerStyle={{backgroundColor: 'rgba(0,0,0,0.01)'}}
-            rewind={(undo) => {this._undo = undo}}
-            clear={(clear) => {this._clear = clear}}
-            updateSVGInfo={(svgObj)=>{this.updateSVGInfo(svgObj)}}
-            color={'#000000'}
-            strokeWidth={4}
-            svgId={this.state.svgId}
-          />
-        </View>
-
-        <View>
-          <Text>Saved Drawings</Text>
-            {(svgObjects.length > 0)&&svgObjects.map((svgObj, index)=>{
-              return (
-                <View
-                  key={index}
-                  style={styles.imageFrame}
-                >
-                  <Image
-                    style={styles.backgroundImg}
-                    source={(require('./whiteboard.jpg'))}
-                  />
-                  <Svg style={styles.drawSurface}>
-                    <G>
-                      {svgObj.previousStrokes}
-                      <Path
-                        // key={this.state.tracker}
-                        d={svgObj.d}
-                        stroke={ svgObj.stroke || "#000000"}
-                        strokeWidth={svgObj.storkeWidth || 4}
-                        fill={svgObj.fill}
-                      />
-                    </G>
-                  </Svg>
-                </View>
-              )
-            })}
-        </View>
-
-      </View>
-      </ScrollView>
-    );
+      )
   }
 }
 
@@ -179,6 +172,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   backgroundImg: {
-    width: '100%', height: '100%', position: 'absolute'
+    width: '100%', height: '90%', position: 'absolute'
   }
 });
