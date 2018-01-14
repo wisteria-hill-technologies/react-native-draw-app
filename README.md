@@ -8,3 +8,5 @@
 ## References
 - I have taken the library rn-draw (https://github.com/jayeszee/rn-draw.git) and modified it as I was not able to achieve all the functionalies I needed as a library.
 
+## Try the demo with expo!
+https://expo.io/@nfabacus/react-native-draw
